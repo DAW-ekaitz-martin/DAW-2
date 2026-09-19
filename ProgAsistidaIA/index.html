@@ -10,6 +10,11 @@
                 padding: 0;
                 box-sizing: border-box;
             }
+            .contenedor-pagina {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
             body {
                 font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
                 background-color: #1e1e1e;
@@ -38,6 +43,7 @@
                 border: 1px solid #444;
                 border-radius: 8px;
                 background-color: #2a2a2a;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             }
             
             .campo {
@@ -54,6 +60,7 @@
             }
 
             .campo input {
+                width: 100%;
                 padding: 10px;
                 font-size: 15px;
                 border: 1px solid #555;
@@ -70,6 +77,7 @@
             }
             
             .campo textarea {
+                width: 100%;
                 padding: 10px;
                 font-size: 15px;
                 border: 1px solid #555;
@@ -89,6 +97,7 @@
             }
 
             .campo select {
+                width: 100%;
                 padding: 10px;
                 font-size: 15px;
                 border: 1px solid #555;
@@ -113,14 +122,16 @@
                 font-size: 16px;
                 font-weight: bold;
                 color: #fff;
-                background-color: #2c80ff;
+                background-color: #2ecc71;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
+                transition: box-shadow 0.2s ease, background-color 0.2s ease;
             }
 
             .btn-enviar:hover {
-                background-color: #1a6ce0;
+                background-color: #27ae60;
+                box-shadow: 0 0 16px rgba(46, 204, 113, 0.7);
             }
 
             .titulo-seccion {
@@ -147,11 +158,16 @@
 
             .tabla-averias {
                 display: none;
-                width: 90%;
-                max-width: 900px;
-                margin: 0 auto 40px auto;
+                width: 100%;
+                min-width: 500px;
                 border-collapse: collapse;
                 font-size: 15px;
+            }
+
+            .tabla-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                margin-bottom: 40px;
             }
 
             .tabla-averias th,
@@ -159,6 +175,7 @@
                 border: 1px solid #444;
                 padding: 10px;
                 text-align: left;
+                word-break: break-word;
             }
 
             .tabla-averias th {
@@ -169,6 +186,28 @@
 
             .tabla-averias tbody tr:nth-child(even) {
                 background-color: #2a2a2a;
+            }
+
+            .pastilla {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 999px;
+                font-size: 13px;
+                font-weight: bold;
+                color: #fff;
+                text-align: center;
+            }
+
+            .pastilla-baja {
+                background-color: #2ecc71;
+            }
+
+            .pastilla-media {
+                background-color: #e67e22;
+            }
+
+            .pastilla-urgente {
+                background-color: #e74c3c;
             }
 
             .pie-pagina {
@@ -193,6 +232,22 @@
 
             .btn-tema:hover {
                 background-color: #3a3a3a;
+            }
+
+            
+            .btn-resolver {
+                padding: 6px 12px;
+                font-size: 13px;
+                font-weight: bold;
+                background-color: #2ecc71;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .btn-resolver:hover {
+                background-color: #27ae60;
             }
             body.modo-claro {
                 background-color: #ffffff;
@@ -237,58 +292,172 @@
                 color: #7f8c8d;
                 border-top-color: #dcdcdc;
             }
+
+            body.modo-claro .btn-eliminar {
+                background-color: #ffffff;
+                color: #333;
+                border-color: #ccc;
+            }
+            body.modo-claro .btn-resolver {
+                background-color: #2ecc71;
+                color: #fff;
+            }
+
+            body.modo-claro .btn-resolver:hover {
+                background-color: #27ae60;
+            }
     </style>
 </head>
 <body>
-        <button id="btn-tema" class="btn-tema">Modo claro</button>
-        <div class="cabecera">
-            <h1>Panel de Soporte Técnico</h1>
-            <p>Registro y control de incidencias</p>
-        </div>
-        <form class="formulario-averia">
-            <div class="contenedor-campos">
-                <div class="campo">
-                    <label for="dispositivo">Dispositivo averiado</label>
-                                    <input type="text" id="dispositivo" name="dispositivo" required placeholder="Ej: Portátil Lenovo, Torre custom...">
-                </div>
-
-                <div class="campo">
-                    <label for="descripcion">Descripción del problema técnico</label>
-                    <textarea id="descripcion" name="descripcion" required placeholder="Ej: No enciende, la pantalla parpadea, hace un ruido extraño al arrancar..."></textarea>
-                </div>
-
-                <div class="campo">
-                    <label for="urgencia">Grado de urgencia</label>
-                    <select id="urgencia" name="urgencia" required>
-                        <option value="" disabled selected>Selecciona una opción</option>
-                        <option value="baja">Baja</option>
-                        <option value="media">Media</option>
-                        <option value="urgente">Urgente</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-enviar">Registrar Incidencia</button>
+        <div class="contenedor-pagina">
+            <button id="btn-tema" class="btn-tema">Modo claro</button>
+            <div class="cabecera">
+                <h1>Panel de Soporte Técnico</h1>
+                <p>Registro y control de incidencias</p>
             </div>
-        </form>
-        <h2 class="titulo-seccion">Equipos pendientes de reparación</h2>
-        <p id="contador-incidencias" class="contador-incidencias">Total de incidencias activas: 0</p>
-        <p id="mensaje-vacio" class="aviso-vacio">No hay averías registradas actualmente en el taller</p>
-        <table id="tabla-averias" class="tabla-averias">
-            <thead>
-                <tr>
-                    <th>Dispositivo</th>
-                    <th>Avería</th>
-                    <th>Urgencia</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+            <form id="formulario-averia" class="formulario-averia">
+                <div class="contenedor-campos">
+                    <div class="campo">
+                        <label for="dispositivo">Dispositivo averiado</label>
+                                        <input type="text" id="dispositivo" name="dispositivo" required placeholder="Ej: Portátil Lenovo, Torre custom...">
+                    </div>
 
-            </tbody>
-        </table>
-        <footer class="pie-pagina">
-            <p>Sistema de Control Técnico - Desarrollado por Ekaitz Martin</p>
-        </footer>
+                    <div class="campo">
+                        <label for="descripcion">Descripción del problema técnico</label>
+                        <textarea id="descripcion" name="descripcion" required placeholder="Ej: No enciende, la pantalla parpadea, hace un ruido extraño al arrancar..."></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="urgencia">Grado de urgencia</label>
+                        <select id="urgencia" name="urgencia" required>
+                            <option value="" disabled selected>Selecciona una opción</option>
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-enviar">Registrar Incidencia</button>
+                </div>
+            </form>
+            <h2 class="titulo-seccion">Equipos pendientes de reparación</h2>
+            <p id="contador-incidencias" class="contador-incidencias">Total de incidencias activas: 0</p>
+            <p id="mensaje-vacio" class="aviso-vacio">No hay averías registradas actualmente en el taller</p>
+            <div class="tabla-wrapper">
+                <table id="tabla-averias" class="tabla-averias">
+                    <thead>
+                        <tr>
+                            <th>Dispositivo</th>
+                            <th>Avería</th>
+                            <th>Urgencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            <footer class="pie-pagina">
+                <p>Sistema de Control Técnico - Desarrollado por Ekaitz Martin</p>
+            </footer>
+        </div>
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('Panel de control iniciado');
+                cargarDesdeMemoria();
+                actualizarEstadoTabla();
+            });
+
+            function cargarDesdeMemoria() {
+                const datosGuardados = localStorage.getItem('averias');
+
+                if (!datosGuardados) {
+                    return;
+                }
+
+                const listado = JSON.parse(datosGuardados);
+
+                listado.forEach(function (averia) {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${averia.dispositivo}</td>
+                        <td>${averia.descripcion}</td>
+                        <td><span class="pastilla pastilla-${averia.urgenciaValor}">${averia.urgenciaTexto}</span></td>
+                        <td><button type="button" class="btn-resolver">Resolver</button></td>
+                    `;
+                    cuerpoTabla.appendChild(fila);
+                });
+            }
+            const formularioAveria = document.getElementById('formulario-averia');
+
+                        const cuerpoTabla = document.querySelector('#tabla-averias tbody');
+
+            formularioAveria.addEventListener('submit', function (evento) {
+                evento.preventDefault();
+
+                const dispositivo = document.getElementById('dispositivo').value;
+                const descripcion = document.getElementById('descripcion').value;
+                const selectUrgencia = document.getElementById('urgencia');
+                const urgenciaTexto = selectUrgencia.options[selectUrgencia.selectedIndex].text;
+                console.log('Dispositivo:', dispositivo, '| Problema:', descripcion, '| Urgencia:', urgenciaTexto);
+
+                const nuevaFila = document.createElement('tr');
+                nuevaFila.innerHTML = `
+                    <td>${dispositivo}</td>
+                    <td>${descripcion}</td>
+                    <td><span class="pastilla pastilla-${selectUrgencia.value}">${urgenciaTexto}</span></td>
+                    <td><button type="button" class="btn-resolver">Resolver</button></td>
+                `;
+
+                cuerpoTabla.appendChild(nuevaFila);
+
+                formularioAveria.reset();
+
+                actualizarEstadoTabla();
+            });
+
+            cuerpoTabla.addEventListener('click', function (evento) {
+                if (evento.target.classList.contains('btn-resolver')) {
+                    evento.target.closest('tr').remove();
+                    actualizarEstadoTabla();
+                }
+            });
+
+            function actualizarEstadoTabla() {
+                const tablaAverias = document.getElementById('tabla-averias');
+                const mensajeVacio = document.getElementById('mensaje-vacio');
+                const contador = document.getElementById('contador-incidencias');
+                const numeroFilas = cuerpoTabla.querySelectorAll('tr').length;
+
+                contador.textContent = `Total de incidencias activas: ${numeroFilas}`;
+
+                if (numeroFilas > 0) {
+                    tablaAverias.style.display = 'table';
+                    mensajeVacio.style.display = 'none';
+                } else {
+                    tablaAverias.style.display = 'none';
+                    mensajeVacio.style.display = 'block';
+                }
+
+                guardarEnMemoria();
+            }
+
+            function guardarEnMemoria() {
+                const filas = cuerpoTabla.querySelectorAll('tr');
+                const listado = [];
+
+                filas.forEach(function (fila) {
+                    const spanUrgencia = fila.querySelector('.pastilla');
+                    listado.push({
+                        dispositivo: fila.children[0].textContent,
+                        descripcion: fila.children[1].textContent,
+                        urgenciaTexto: spanUrgencia.textContent,
+                        urgenciaValor: spanUrgencia.classList[1].replace('pastilla-', '')
+                    });
+                });
+
+                localStorage.setItem('averias', JSON.stringify(listado));
+            }
             const botonTema = document.getElementById('btn-tema');
 
             botonTema.addEventListener('click', function () {
