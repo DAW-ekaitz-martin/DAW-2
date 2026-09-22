@@ -56,14 +56,58 @@ do {
 while (num != secreto);
 console.log(`Has necesitado ${cont} intentos para acertarlo paquete`);*/
 //E6
-const texto = "Hola como estás"
+/*const texto = "Hola como estas"
 let cont = 0;
+let vocales = "aeiouAEIOUáéíóú";
 for(let frase of texto) {
     for(let letra of frase) {
-        if(letra.includes("a")) {
+        if(vocales.includes(letra)) {
             cont ++;
         }
     }
 }
-console.log(`La frase tiene ${cont} vocales`);
+console.log(`La frase tiene ${cont} vocales);*/
+//E7
+/*for(let i = 1; i <= 20; i++) {
+    if(i%3==0) {
+        continue;
+    }
+    if(i == 17) {
+        break;
+    }
+    console.log(i);
+}*/
+//E8
+/*let respuesta ="";
+do {
+    
+    let res = prompt("Ingrese su respuesta");
+    respuesta = res;
+    console.log("1->Info");
+    console.log("2->Ayuda");
+    console.log("0->Salir");
+} while(respuesta != 0);*/
+//E9
+/*let respuesta = null;
+do {
+    let res = prompt("Ingrese un número: ");
+    if(!isNaN(Number(res) && res != null)) {
+        respuesta = res;
+    }
+} while(respuesta == null);
+console.log(`El número introducido es el: ${respuesta}`);*/
+//10
+cont = 0;
+let pregunta1 = prompt("Cual es la capital de España?:");
+let pregunta2 = prompt("Cual es el resultado de hacer 1+1?:");
+let pregunta3 = prompt("Cual es el resultado de hacer 2x1?:");
+if(pregunta1 == "Madrid") {
+    cont++;
+}
+if(pregunta2 == 2) {
+    cont++;
+}if(pregunta3 == 2) {
+    cont++;
+}
+console.log(`Aciertos: ${cont}/3`);
 
