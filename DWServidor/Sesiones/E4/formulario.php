@@ -7,13 +7,13 @@
 </head>
 <body>
     <form action="cambiarTema.php" method="post">
-        <label for="tema"></label>
+        <label for="tema">Elige una opcion</label>
         <select name="tema" id="tema">
-            <option value="claro" name="claro" id="claro" value="claro"></option>
-            <option value="oscuro" name="oscuro" id="oscuro" value="oscuro"></option>
-            <option value="azul" name="azul" id="azul" value="azul"></option>
-            <button type="submit">Enviar</button>
+            <option name="claro" id="claro" value="white">Claro</option>
+            <option name="oscuro" id="oscuro" value="black">Oscuro</option>
+            <option name="azul" id="azul" value="blue">Azul</option>
         </select>
+        <button type="submit">Enviar</button>
     </form>
 </body>
 </html>

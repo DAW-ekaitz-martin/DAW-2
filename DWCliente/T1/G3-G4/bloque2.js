@@ -54,7 +54,7 @@ const precioAlto = productos.filter(producto => producto.precio < 80);
 console.log(precioAlto);*/
 
 //E16
-const productos = [
+/*const productos = [
 { nombre: "Ratón", precio: 20, stock: 4 },
 { nombre: "Teclado", precio: 50, stock: 0 },
 { nombre: "Monitor", precio: 180, stock: 3 },
@@ -62,8 +62,30 @@ const productos = [
 ];
 const nombres = [];
 productos.forEach(producto => nombres.push(producto.nombre));
-console.log(nombres);
+console.log(nombres);*/
+//17
+/*let totalStock = 0;
+const productos = [
+{ nombre: "Ratón", precio: 20, stock: 4 },
+{ nombre: "Teclado", precio: 50, stock: 0 },
+{ nombre: "Monitor", precio: 180, stock: 3 },
+{ nombre: "Auriculares", precio: 70, stock: 0 }
+];
 
+productos.forEach(producto => totalStock+= producto.stock);
+console.log(`Stock total: ${totalStock}`);*/
+//18
+const productos = [
+{ nombre: "Ratón", precio: 20, stock: 4 },
+{ nombre: "Teclado", precio: 50, stock: 0 },
+{ nombre: "Monitor", precio: 180, stock: 3 },
+{ nombre: "Auriculares", precio: 70, stock: 0 }
+];
+productos.forEach(producto => {
+    if(producto.stock > 0 && producto.precio < 100) {
+        console.log(`${producto.nombre}-${producto.precio}-${producto.stock}`);
+    }
+});
 
 
 
