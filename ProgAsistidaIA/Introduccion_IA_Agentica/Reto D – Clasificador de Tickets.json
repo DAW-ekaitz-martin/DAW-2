@@ -1,0 +1,116 @@
+{
+  "name": "Reto D – Clasificador de Tickets",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e5c7d860-348d-40de-ac73-a2ba24ab216b",
+      "name": "When chat message received",
+      "webhookId": "03eb4f96-7ea5-4000-bb08-b5c0dbc13855"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Eres un analista de soporte técnico que clasifica tickets de clientes. Tu única tarea es analizar la queja y devolver la clasificación según el esquema indicado, sin texto adicional.\n\nDEPARTAMENTOS:\n- Sistemas: infraestructura y disponibilidad. Servidores caídos, errores 5xx (500, 502, 503), caídas de red, bases de datos inaccesibles, pasarelas de pago o servicios externos no disponibles, lentitud generalizada.\n- Desarrollo: funcionalidad que no se comporta como debería, aunque el servicio esté disponible. Botones que no responden, cálculos erróneos, errores de validación, fallos visuales, peticiones de nuevas funcionalidades.\n- Facturación: gestión económica y administrativa sin fallo técnico. Cargos duplicados o incorrectos, facturas, reembolsos, cambios de plan, dudas sobre precios.\n\nREGLA ANTE AMBIGÜEDAD:\nClasifica por la CAUSA RAÍZ, no por el síntoma. Si un problema de pagos se debe a un fallo técnico (servidor caído, error 5xx), el responsable es quien puede arreglar la causa, no Facturación. Facturación solo cuando el problema es administrativo y los sistemas funcionan correctamente. Explica tu razonamiento en el campo \"justificacion\".\n\nURGENCIA:\n- Alta: servicio caído o función crítica inutilizable, impacto económico directo (no se puede cobrar o vender), afecta a muchos usuarios, riesgo de seguridad o de pérdida de datos. Cuanto más tiempo lleve el problema, más refuerza la urgencia.\n- Media: funcionalidad degradada o fallo que afecta a parte de los usuarios pero existe una alternativa temporal; errores de facturación puntuales.\n- Baja: consultas, dudas, problemas estéticos, sugerencias de mejora.\n\nREGLAS:\n- Basa la clasificación solo en lo que dice el cliente; no inventes detalles.\n- Usa exactamente los valores permitidos, respetando mayúsculas y tildes.\n- Las palabras clave deben ser términos que aparezcan o se deduzcan directamente de la queja."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6afd2de8-c7b1-48c2-8bc1-b9084795fef9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "14607147-3a87-4901-a565-12244f715998",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "wQPHgu92oJiiNIOW",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"resumen\": {\n      \"type\": \"string\",\n      \"description\": \"Resumen del problema en una frase\"\n    },\n    \"urgencia\": {\n      \"type\": \"string\",\n      \"enum\": [\"Alta\", \"Media\", \"Baja\"],\n      \"description\": \"Nivel de urgencia del ticket\"\n    },\n    \"departamento\": {\n      \"type\": \"string\",\n      \"enum\": [\"Sistemas\", \"Desarrollo\", \"Facturacion\"],\n      \"description\": \"Departamento responsable de resolverlo\"\n    },\n    \"justificacion\": {\n      \"type\": \"string\",\n      \"description\": \"Motivo de la urgencia y del departamento asignados\"\n    },\n    \"palabras_clave\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"description\": \"Términos clave detectados en la queja\"\n    }\n  },\n  \"required\": [\"resumen\", \"urgencia\", \"departamento\", \"justificacion\", \"palabras_clave\"],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        208
+      ],
+      "id": "3aecbb61-39bd-4c77-9274-218406c304c0",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fcbce5cc-0e7a-4a8c-8b48-e1eb527d1a36",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c555240d3bc4d563c5513cf7456183518e21b64d5249888e5a1e1e6a28bb011f"
+  },
+  "id": "6GX7AF9qVryNKgnI",
+  "tags": []
+}

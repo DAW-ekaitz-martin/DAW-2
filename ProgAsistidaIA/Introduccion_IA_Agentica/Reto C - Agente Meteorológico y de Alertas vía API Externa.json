@@ -1,0 +1,140 @@
+{
+  "name": "Reto C - Agente Meteorológico y de Alertas vía API Externa",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dc5441a0-7b4a-4876-8901-c2ad928c210a",
+      "name": "When chat message received",
+      "webhookId": "138d41ab-1b59-4f82-8424-81d474b4ad9d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente meteorológico que da recomendaciones prácticas de vestimenta y alertas.\n\nREGLAS FUNDAMENTALES:\n1. NUNCA inventes datos meteorológicos. Para cualquier pregunta sobre el tiempo, llama SIEMPRE a la herramienta \"get_weather\" con el nombre de la ciudad.\n2. Si el usuario no indica ciudad, pregúntale cuál antes de llamar a la herramienta.\n3. Si la herramienta falla o no devuelve datos, dilo con sinceridad y no des cifras.\n\nCÓMO LEER LOS DATOS (bloque current_condition):\n- temp_C: temperatura en °C\n- FeelsLikeC: sensación térmica en °C (úsala para decidir la ropa, es lo que se siente de verdad)\n- humidity: humedad relativa en %\n- windspeedKmph: velocidad del viento en km/h\n- precipMM: precipitación en mm (mayor que 0 = está lloviendo)\n- uvIndex: índice ultravioleta\n- weatherDesc: descripción del cielo en inglés (tradúcela al español)\n- localObsDateTime: hora local de la observación\n\nCRITERIO DE VESTIMENTA (según la sensación térmica):\n- Menos de 5 °C: abrigo grueso, bufanda, gorro y guantes.\n- 5 a 12 °C: chaqueta de abrigo o plumífero ligero y jersey.\n- 12 a 18 °C: chaqueta ligera, sudadera o jersey fino.\n- 18 a 24 °C: manga larga fina o camiseta con una capa ligera por si refresca.\n- Más de 24 °C: ropa ligera y transpirable.\nAjustes: si llueve, añade chubasquero o paraguas y calzado impermeable. Si el viento supera 30 km/h, recomienda una prenda cortavientos y desaconseja el paraguas.\n\nALERTAS (añade la sección de alertas solo si se cumple alguna):\n- Viento superior a 50 km/h: alerta por viento fuerte.\n- Precipitación superior a 5 mm: alerta por lluvia intensa.\n- Índice UV de 6 o más: recomienda protección solar y gafas de sol.\n- Sensación térmica superior a 32 °C: alerta por calor (hidratación, evitar horas centrales).\n- Sensación térmica inferior a 0 °C: alerta por frío y posible hielo.\n\nFORMATO DE RESPUESTA (Markdown, en español, breve):\n## Tiempo actual en <ciudad>\n- Temperatura, sensación térmica, cielo, humedad, viento y lluvia, indicando la hora de la observación.\n## Qué ropa llevar\n- Recomendación concreta y justificada con los datos.\n## Alertas\n- Solo si aplica alguna."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "35bd634f-4cf1-44d2-9a34-9642e2b361fa",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        240
+      ],
+      "id": "c74fd70c-d178-495b-a7e7-5b0f65d180c3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        208,
+        240
+      ],
+      "id": "5c1ea7d3-2204-44b8-9424-369cb632ccf3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "wQPHgu92oJiiNIOW",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Obtiene el tiempo meteorológico actual en tiempo real de una ciudad usando la API de wttr.in. Úsala SIEMPRE que el usuario pregunte por el tiempo, la temperatura, la lluvia, el viento o qué ropa llevar en un lugar. Devuelve temperatura (temp_C), sensación térmica (FeelsLikeC), humedad, viento, precipitación, índice UV y descripción del cielo.",
+        "url": "=https://wttr.in/{{ $fromAI('city', 'Nombre de la ciudad sin tildes; si tiene espacios usa + (ej: San+Sebastian)', 'string') }}?format=j1",
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "current_condition"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        256
+      ],
+      "id": "421bfa9c-15ad-4c48-9451-c20f803e99d1",
+      "name": "get_weather"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c7ca571a-0a5e-45da-a4d4-91e4f3b0ef9c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c555240d3bc4d563c5513cf7456183518e21b64d5249888e5a1e1e6a28bb011f"
+  },
+  "id": "5WexqkdOZ0OU32M4",
+  "tags": []
+}

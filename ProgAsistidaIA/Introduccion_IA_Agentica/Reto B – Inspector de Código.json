@@ -1,0 +1,137 @@
+{
+  "name": "Reto B – Inspector de Código",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6f93f110-ef5f-47c3-b128-41ec832234b5",
+      "name": "When chat message received",
+      "webhookId": "3ebea1fa-350c-4f5f-8da1-7438c11d51fd"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un Inspector de Calidad de Código senior, experto en algoritmos y buenas prácticas.\n\nPROCESO OBLIGATORIO (en este orden):\n1. Llama SIEMPRE a la herramienta \"analyze_code\" enviándole el código completo del usuario, sin modificarlo.\n2. Usa las métricas devueltas como punto de partida, pero verifícalas con tu propio razonamiento: la herramienta es heurística y puede equivocarse. Si discrepas, explica por qué.\n3. Redacta la respuesta siguiendo EXACTAMENTE la plantilla de abajo.\n\nPLANTILLA DE RESPUESTA (en Markdown):\n\n## 1. Resumen\nUna o dos frases sobre qué hace la función.\n\n## 2. Análisis de complejidad (código original)\n- **Tiempo:** O(...) — justificación breve.\n- **Espacio:** O(...) — justificación breve (incluye la pila de recursión si aplica).\n- **Métricas de la herramienta:** resumen de lo que devolvió analizar_codigo.\n\n## 3. Bugs y problemas detectados\nLista de bugs reales, casos límite no controlados (entrada vacía, negativos, tipos incorrectos...) y malas prácticas. Si no hay bugs, dilo; no los inventes.\n\n## 4. Código refactorizado\nBloque de código en el MISMO lenguaje que el original, con:\n- Algoritmo más eficiente cuando sea posible.\n- Nombres descriptivos.\n- Documentación (docstring o JSDoc) indicando parámetros, retorno y complejidad.\n- Control de casos límite.\n\n## 5. Complejidad tras la refactorización\n- **Tiempo:** O(...)\n- **Espacio:** O(...)\n- Breve comparación con el original.\n\nREGLAS:\n- El código refactorizado debe producir el mismo resultado que el original para entradas válidas.\n- Responde siempre en español.\n- Si el usuario no envía código, pídele amablemente que lo haga y no llames a la herramienta."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a111160b-a4f8-46fb-ad03-e3876bd0ca16",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "9f8a7eb4-21ca-457a-b2b6-77cd4957f961",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "wQPHgu92oJiiNIOW",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "da1c13df-4061-42e5-a61d-952b74d8149a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Analiza estáticamente una función de código JavaScript. Devuelve métricas: número de bucles, profundidad máxima de anidamiento, funciones recursivas, uso de memoización y una pista de complejidad temporal. Úsala SIEMPRE antes de evaluar un código. Envía como entrada el código fuente completo, exactamente como lo escribió el usuario.",
+        "jsCode": "// Entrada: el agente envía el código a analizar en la variable \"query\"\nconst code = String(query || '');\nconst lines = code.split('\\n');\nconst nonEmpty = lines.filter(l => l.trim() !== '');\n\n// 1. Bucles y profundidad máxima de anidamiento (usando la indentación)\nconst loopRe = /^\\s*(for|while)\\b/;\nlet loops = 0;\nlet maxDepth = 0;\nconst stack = [];\nfor (const line of lines) {\n  if (!line.trim()) continue;\n  const indent = line.match(/^\\s*/)[0].length;\n  while (stack.length && stack[stack.length - 1] >= indent) stack.pop();\n  if (loopRe.test(line)) {\n    loops++;\n    stack.push(indent);\n    maxDepth = Math.max(maxDepth, stack.length);\n  }\n}\n\n// 2. Recursión: funciones que se llaman a sí mismas\nconst defRe = /(?:def|function)\\s+([A-Za-z_]\\w*)|(?:const|let|var)\\s+([A-Za-z_]\\w*)\\s*=\\s*(?:function|\\()/g;\nconst defs = [...code.matchAll(defRe)].map(m => ({ name: m[1] || m[2], declConParentesis: !!m[1] }));\nconst recursive = [];\nfor (const d of defs) {\n  const total = (code.match(new RegExp('\\\\b' + d.name + '\\\\s*\\\\(', 'g')) || []).length;\n  const calls = total - (d.declConParentesis ? 1 : 0);\n  if (calls > 0) recursive.push({ funcion: d.name, llamadas_a_si_misma: calls });\n}\n\n// 3. ¿Hay memoización?\nconst memo = /memo|cache|lru_cache|new Map|dp\\[/i.test(code);\n\n// 4. Pista de complejidad temporal\nlet pista;\nif (recursive.some(r => r.llamadas_a_si_misma >= 2) && !memo) pista = 'Recursión múltiple sin memoización: posible O(2^n)';\nelse if (recursive.length) pista = 'Recursión simple o memoizada: suele ser O(n) en tiempo y O(n) en pila';\nelse if (maxDepth >= 2) pista = `Bucles anidados (profundidad ${maxDepth}): posible O(n^${maxDepth})`;\nelse if (maxDepth === 1) pista = 'Un nivel de bucle: posible O(n)';\nelse pista = 'Sin bucles ni recursión: posible O(1)';\n\nreturn JSON.stringify({\n  lineas_de_codigo: nonEmpty.length,\n  bucles: loops,\n  anidamiento_maximo_bucles: maxDepth,\n  funciones_recursivas: recursive,\n  usa_memoizacion: memo,\n  pista_complejidad: pista\n}, null, 2);"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "a59962d7-f697-4097-9c69-f9f23e4706c1",
+      "name": "analyze_code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyze_code": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fc9ce302-991c-4e44-8539-15b979e7df45",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c555240d3bc4d563c5513cf7456183518e21b64d5249888e5a1e1e6a28bb011f"
+  },
+  "id": "MxLqg11Barrts1Oi",
+  "tags": []
+}
