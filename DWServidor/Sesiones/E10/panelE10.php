@@ -3,8 +3,6 @@
     $tema = $_SESSION["tema"] ?? "white";
     $fontColor = $_SESSION["fontColor"] ?? "black";
     $idioma = $_SESSION["idioma"] ?? "es";
-    $admin = $_SESSION["admin"] ?? "";
-    echo $admin."<br>";
 ?>
 <!DOCTYPE html>
 <html lang="<?= $idioma?>">
@@ -31,7 +29,8 @@
             } else {
                 $_SESSION["visitas"] = 1;
             }
-            if(isset($_SESSION["admin"]) && $admin != "") {
+            if(isset($_POST["admin"])) {
+                $_SESSION["admin"] = $_POST["admin"];
                 echo "Bienvenido admin<br>";
             } else {
                 echo "Bienvenido usuario<br>";
