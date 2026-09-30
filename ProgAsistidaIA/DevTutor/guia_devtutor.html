@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Construye DevTutor · Guía de clase n8n</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F4; --dot:#CDD3DD; --paper:#FFFFFF; --ink:#1B2130; --muted:#5A6378; --line:#D5DAE3;
+  --agent:#5B3FD6; --agent-soft:#ECE8FD; --tool:#0B7F73; --tool-soft:#E1F3F0;
+  --mem:#A86C06; --mem-soft:#FBF0DA; --trig:#2F6FDE; --trig-soft:#E3ECFC;
+  --ok:#23854A; --ok-soft:#E0F2E7; --warn:#B3261E; --warn-soft:#FBE7E5;
+  --off:#C4CAD6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#141824; --dot:#262C3B; --paper:#1C2130; --ink:#E7EAF2; --muted:#A0A8BB; --line:#30374A;
+  --agent:#A08CFF; --agent-soft:#2B2550; --tool:#4CC7B6; --tool-soft:#163833;
+  --mem:#E6B04A; --mem-soft:#3A2E14; --trig:#7EA8FF; --trig-soft:#1D2A48;
+  --ok:#5CCB86; --ok-soft:#173424; --warn:#FF8A80; --warn-soft:#3D1D1B; --off:#3A4152;
+}}
+:root[data-theme="dark"]{
+  --bg:#141824; --dot:#262C3B; --paper:#1C2130; --ink:#E7EAF2; --muted:#A0A8BB; --line:#30374A;
+  --agent:#A08CFF; --agent-soft:#2B2550; --tool:#4CC7B6; --tool-soft:#163833;
+  --mem:#E6B04A; --mem-soft:#3A2E14; --trig:#7EA8FF; --trig-soft:#1D2A48;
+  --ok:#5CCB86; --ok-soft:#173424; --warn:#FF8A80; --warn-soft:#3D1D1B; --off:#3A4152;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  background-image:radial-gradient(var(--dot) 1.2px,transparent 1.3px);background-size:22px 22px;
+  font:17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.15;margin:0}
+code,.msg{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.88em}
+a{color:var(--agent)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:1fr;gap:28px}
+@media(min-width:960px){.wrap{grid-template-columns:320px 1fr;align-items:start}}
+
+/* Sidebar map */
+aside{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:20px}
+@media(min-width:960px){aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}}
+aside h1{font-size:2rem;font-weight:800;letter-spacing:-.02em}
+aside .sub{color:var(--muted);margin:6px 0 14px;font-size:.95rem}
+#map{width:100%;height:auto;display:block}
+#map .n rect{fill:var(--paper);stroke:var(--off);stroke-width:2;transition:fill .35s,stroke .35s}
+#map .n text{fill:var(--muted);font:600 12.5px "Atkinson Hyperlegible",system-ui,sans-serif;transition:fill .35s}
+#map .n .ic{font-size:17px}
+#map .w{stroke:var(--off);stroke-width:2;fill:none;stroke-dasharray:5 5;transition:stroke .35s}
+#map .on rect{stroke:var(--c);fill:var(--cs)}
+#map .on text{fill:var(--ink)}
+#map .w.on{stroke:var(--c);stroke-dasharray:none}
+#map .badge{opacity:0;transition:opacity .35s}
+#map .badge.on{opacity:1}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:14px 0 6px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+.count{font-size:.9rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.count button{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.legend{margin-top:14px;font-size:.85rem;color:var(--muted)}
+
+/* Main */
+main{min-width:0;display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:22px 24px}
+.intro p{margin:.3em 0 0;max-width:68ch}
+.agenda{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+td,th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted)}
+td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.cp{border-left:6px solid var(--c,var(--off))}
+.cp header{display:flex;gap:14px;align-items:flex-start}
+.num{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;
+  font:800 1.3rem "Bricolage Grotesque",system-ui,sans-serif;background:var(--cs,var(--line));color:var(--c,var(--ink))}
+.cp.done .num{background:var(--ok);color:var(--paper)}
+.cp h2{font-size:1.45rem;font-weight:800}
+.time{color:var(--muted);font-size:.92rem;margin-top:2px}
+.why{margin:14px 0 4px;padding:10px 14px;border-radius:10px;background:var(--cs,var(--bg));max-width:70ch}
+.why b{color:var(--c,var(--ink))}
+ol.steps{padding-left:1.3em;margin:14px 0;max-width:72ch}
+ol.steps li{margin:.45em 0}
+.expect{border:1.5px dashed var(--line);border-radius:10px;padding:10px 14px;margin:12px 0;max-width:72ch}
+.expect::before{content:"👀 Qué debería aparecer";display:block;font-weight:700;font-size:.9rem;color:var(--muted);margin-bottom:2px}
+.msg{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:3px 4px 3px 10px;margin:2px 0;max-width:100%}
+.msg span{overflow-wrap:anywhere}
+.copy{font:600 .78rem "Atkinson Hyperlegible",system-ui,sans-serif;border:0;border-radius:6px;padding:4px 8px;cursor:pointer;background:var(--agent-soft);color:var(--agent);flex:none}
+.checks{margin:16px 0 4px;padding:14px 16px;border-radius:12px;background:var(--bg)}
+.checks h3{font-size:1rem;margin-bottom:6px}
+.checks label{display:flex;gap:10px;align-items:flex-start;padding:5px 0;cursor:pointer}
+.checks input{width:20px;height:20px;margin-top:3px;accent-color:var(--ok);flex:none}
+details{margin-top:10px;border-radius:10px;border:1px solid var(--line)}
+details summary{cursor:pointer;padding:9px 14px;font-weight:700}
+details .in{padding:0 14px 12px}
+details.help summary{color:var(--warn)}
+pre.tpl{background:var(--bg);border-radius:8px;padding:12px;white-space:pre-wrap;margin:6px 0;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85rem;overflow-x:auto}
+.faq dt{font-weight:700;margin-top:12px}
+.faq dd{margin:2px 0 0;color:var(--muted);max-width:70ch}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.82rem;font-weight:700;background:var(--agent-soft);color:var(--agent)}
+kbd{font-family:inherit;font-weight:700;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--paper)}
+:focus-visible{outline:3px solid var(--agent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<aside aria-label="Tu flujo">
+  <h1>Construye DevTutor</h1>
+  <p class="sub">Tu flujo se va encendiendo a medida que completas cada checkpoint.</p>
+  <svg id="map" viewBox="0 0 280 330" role="img" aria-label="Mapa del flujo de n8n">
+    <!-- wires -->
+    <path class="w" data-cp="1" style="--c:var(--trig)" d="M140 62 V96"/>
+    <path class="w" data-cp="1" style="--c:var(--agent)" d="M110 150 C 60 190, 50 200, 50 220"/>
+    <path class="w" data-cp="3" style="--c:var(--mem)" d="M140 150 V220"/>
+    <path class="w" data-cp="4" style="--c:var(--tool)" d="M170 150 C 220 190, 230 200, 230 220"/>
+    <path class="w" data-cp="4" style="--c:var(--tool)" d="M160 150 C 120 240, 60 260, 60 280"/>
+    <path class="w" data-cp="5" style="--c:var(--tool)" d="M180 150 C 220 240, 210 260, 210 280"/>
+    <!-- nodes -->
+    <g class="n" data-cp="1" style="--c:var(--trig);--cs:var(--trig-soft)"><rect x="80" y="18" width="120" height="44" rx="12"/><text x="140" y="45" text-anchor="middle">💬 Chat</text></g>
+    <g class="n" data-cp="1" style="--c:var(--agent);--cs:var(--agent-soft)"><rect x="70" y="96" width="140" height="54" rx="14"/><text x="140" y="128" text-anchor="middle">🤖 AI Agent</text></g>
+    <g class="badge" data-cp="2"><circle cx="206" cy="100" r="13" fill="var(--agent)"/><text x="206" y="105" text-anchor="middle" font-size="13">🎭</text></g>
+    <g class="badge" data-cp="7"><circle cx="74" cy="100" r="13" fill="var(--mem)"/><text x="74" y="105" text-anchor="middle" font-size="13">⭐</text></g>
+    <g class="n" data-cp="1" style="--c:var(--agent);--cs:var(--agent-soft)"><rect x="0" y="220" width="100" height="40" rx="10"/><text x="50" y="245" text-anchor="middle">✨ Gemini</text></g>
+    <g class="n" data-cp="3" style="--c:var(--mem);--cs:var(--mem-soft)"><rect x="90" y="220" width="100" height="40" rx="10"/><text x="140" y="245" text-anchor="middle">🧠 Memoria</text></g>
+    <g class="n" data-cp="4" style="--c:var(--tool);--cs:var(--tool-soft)"><rect x="180" y="220" width="100" height="40" rx="10"/><text x="230" y="245" text-anchor="middle">🧮 Calculator</text></g>
+    <g class="n" data-cp="4" style="--c:var(--tool);--cs:var(--tool-soft)"><rect x="5" y="280" width="110" height="40" rx="10"/><text x="60" y="305" text-anchor="middle">📚 Wikipedia</text></g>
+    <g class="n" data-cp="5" style="--c:var(--tool);--cs:var(--tool-soft)"><rect x="150" y="280" width="120" height="40" rx="10"/><text x="210" y="305" text-anchor="middle">🌤️ Tiempo</text></g>
+  </svg>
+  <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+  <div class="count"><span id="countTxt">0 de 0 comprobaciones</span><button type="button" id="reset">Empezar de cero</button></div>
+  <p class="legend">Tu progreso se guarda en este navegador.</p>
+</aside>
+
+<main>
+  <section class="panel intro">
+    <h2 style="font-size:1.6rem">El reto de hoy</h2>
+    <p>Vas a convertir un chat básico en <b>DevTutor</b>, un tutor de programación que tiene personalidad, recuerda lo que le dices y usa herramientas (calculadora, Wikipedia y el tiempo) cuando las necesita.</p>
+    <p>Partes del archivo <code>devtutor_base.json</code> y lo vas ampliando. Cada checkpoint termina con una prueba: si funciona, marcas las casillas y sigues. <b>No pases al siguiente hasta tener el anterior en verde.</b></p>
+    <div class="agenda">
+      <table>
+        <thead><tr><th>Hora</th><th>Qué hacemos</th></tr></thead>
+        <tbody>
+          <tr><td>0:00 – 0:10</td><td>El profe enseña DevTutor terminado</td></tr>
+          <tr><td>0:10 – 0:20</td><td>Checkpoint 0 · Preparación</td></tr>
+          <tr><td>0:20 – 0:35</td><td>Checkpoint 1 · Hola, Gemini</td></tr>
+          <tr><td>0:35 – 0:55</td><td>Checkpoint 2 · Personalidad</td></tr>
+          <tr><td>0:55 – 1:00</td><td>Descanso</td></tr>
+          <tr><td>1:00 – 1:15</td><td>Checkpoint 3 · Memoria</td></tr>
+          <tr><td>1:15 – 1:35</td><td>Checkpoint 4 · Herramientas</td></tr>
+          <tr><td>1:35 – 1:50</td><td>Checkpoint 5 · El tiempo en Madrid</td></tr>
+          <tr><td>1:50 – 2:00</td><td>Entrega</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CP0 -->
+  <section class="panel cp" data-cp="0" style="--c:var(--muted);--cs:var(--bg)">
+    <header><div class="num">0</div><div><h2>Preparación</h2><div class="time">10 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> en n8n Cloud la prueba dura 14 días y luego se borra todo. Antes de construir nada, comprobamos que tu cuenta sigue viva y cargamos el punto de partida.</p>
+    <ol class="steps">
+      <li>Entra en tu n8n y mira cuántos días de prueba te quedan (aviso arriba de la pantalla). Si te ha caducado, díselo al profe antes de seguir.</li>
+      <li>Pulsa <b>Create workflow</b>. En el menú <kbd>⋯</kbd> de arriba a la derecha elige <b>Import from File</b> y selecciona <code>devtutor_base.json</code>.</li>
+      <li>Ten a mano tu API key de Gemini (la de la semana pasada). Si no la tienes, créala en <b>aistudio.google.com</b> → <b>Get API key</b>.</li>
+    </ol>
+    <div class="expect">Un flujo con 3 nodos conectados (Chat, AI Agent y Gemini) y dos notas amarillas/grises con el reto.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="0a"> Sé cuántos días de prueba me quedan</label>
+      <label><input type="checkbox" data-id="0b"> He importado la base y veo los 3 nodos</label>
+      <label><input type="checkbox" data-id="0c"> Tengo mi API key de Gemini a mano</label>
+    </div>
+  </section>
+
+  <!-- CP1 -->
+  <section class="panel cp" data-cp="1" style="--c:var(--trig);--cs:var(--trig-soft)">
+    <header><div class="num">1</div><div><h2>Hola, Gemini</h2><div class="time">15 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> el AI Agent es quien decide qué hacer, pero necesita un modelo de lenguaje para pensar. El modelo es su cerebro, y la API key es la llave para usarlo.</p>
+    <ol class="steps">
+      <li>Doble clic en <b>Google Gemini Chat Model</b>.</li>
+      <li>En <b>Credential to connect with</b> elige tu credencial. Si no aparece: <b>Create new credential</b> y pega tu API key.</li>
+      <li>En <b>Model</b> deja <code>gemini-2.5-flash</code>. Cierra la ventana.</li>
+      <li>Abajo en el lienzo pulsa <b>Open chat</b> y escribe:<br><span class="msg"><span>Hola, ¿quién eres?</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>Abre el panel <b>Logs</b> (junto al chat) y mira los pasos que ha dado.</li>
+    </ol>
+    <div class="expect">Una respuesta en el chat y los nodos con un check verde. En Logs aparece el AI Agent y, dentro, la llamada a Gemini.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="1a"> El nodo Gemini ya no tiene el triángulo rojo</label>
+      <label><input type="checkbox" data-id="1b"> Me ha respondido al saludo</label>
+      <label><input type="checkbox" data-id="1c"> He encontrado el panel Logs</label>
+    </div>
+  </section>
+
+  <!-- CP2 -->
+  <section class="panel cp" data-cp="2" style="--c:var(--agent);--cs:var(--agent-soft)">
+    <header><div class="num">2</div><div><h2>Personalidad</h2><div class="time">20 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> el <i>System Message</i> son las instrucciones que el agente lee antes de cada conversación. Es lo mismo que haces cuando le explicas a una IA cómo quieres que te ayude, pero guardado para siempre.</p>
+    <ol class="steps">
+      <li><b>Antes de tocar nada</b>, pregunta esto y haz una captura de la respuesta:<br><span class="msg"><span>Hazme una función en Python que diga si un número es par</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>Doble clic en <b>AI Agent</b> → <b>Options</b> → <b>System Message</b>. Ahora pone <code>Eres un asistente útil.</code></li>
+      <li>Sustitúyelo por tu propio mensaje. Tiene que decir: quién es, a quién ayuda, cómo responde y qué <b>no</b> debe hacer.</li>
+      <li>Repite la misma pregunta del paso 1 y compara.</li>
+    </ol>
+    <details><summary>💡 Pista: plantilla para rellenar</summary><div class="in">
+      <pre class="tpl">Eres ______, un tutor de programación para ______.
+Respondes siempre en ______, en un máximo de ___ líneas.
+Si te piden resolver un ejercicio, no ______: en su lugar ______.
+Si no sabes algo, ______.</pre>
+    </div></details>
+    <div class="expect">La segunda respuesta es más corta, en español, y te da una pista en vez de la función completa.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="2a"> Tengo la captura de la respuesta de antes</label>
+      <label><input type="checkbox" data-id="2b"> He escrito mi System Message</label>
+      <label><input type="checkbox" data-id="2c"> Ahora me da una pista en vez de la solución completa</label>
+    </div>
+  </section>
+
+  <!-- CP3 -->
+  <section class="panel cp" data-cp="3" style="--c:var(--mem);--cs:var(--mem-soft)">
+    <header><div class="num">3</div><div><h2>Memoria</h2><div class="time">15 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> un modelo de lenguaje no recuerda nada. Cada mensaje le llega como si fuera el primero. La memoria le reenvía los últimos mensajes para que tenga contexto.</p>
+    <ol class="steps">
+      <li>Compruébalo <b>sin memoria</b>. Manda estos dos mensajes, uno detrás de otro:<br>
+        <span class="msg"><span>Me llamo Ana y estoy aprendiendo Python</span><button class="copy" type="button">Copiar</button></span><br>
+        <span class="msg"><span>¿Cómo me llamo?</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>Debajo del AI Agent, pulsa el <b>+</b> del conector <b>Memory</b> y elige <b>Simple Memory</b>.</li>
+      <li>En <b>Context Window Length</b> pon <code>10</code> (recordará los 10 últimos mensajes).</li>
+      <li>Repite los dos mensajes del paso 1 (cambia el nombre por el tuyo si quieres).</li>
+    </ol>
+    <div class="expect">Sin memoria: “no sé cómo te llamas”. Con memoria: te dice tu nombre. En el lienzo, Simple Memory aparece unida al AI Agent.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="3a"> Sin memoria, no recordaba mi nombre</label>
+      <label><input type="checkbox" data-id="3b"> He conectado Simple Memory al conector Memory</label>
+      <label><input type="checkbox" data-id="3c"> Con memoria, recuerda mi nombre</label>
+    </div>
+  </section>
+
+  <!-- CP4 -->
+  <section class="panel cp" data-cp="4" style="--c:var(--tool);--cs:var(--tool-soft)">
+    <header><div class="num">4</div><div><h2>Herramientas</h2><div class="time">20 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> los modelos se equivocan con cuentas grandes y no conocen todos los datos. Una herramienta es algo que el agente puede usar cuando <b>él decide</b> que la necesita. Esa decisión es lo que convierte un chat en un agente.</p>
+    <ol class="steps">
+      <li>Pregunta <b>sin herramientas</b> y apunta lo que responde:<br><span class="msg"><span>¿Cuánto es 48271 × 3906?</span><button class="copy" type="button">Copiar</button></span><br>(La respuesta correcta es 188.546.526.)</li>
+      <li>Pulsa el <b>+</b> del conector <b>Tool</b> y añade <b>Calculator</b>.</li>
+      <li>Pulsa otra vez el <b>+</b> de <b>Tool</b> y añade <b>Wikipedia</b>.</li>
+      <li>Añade al final de tu System Message cuándo debe usar cada una (por ejemplo: “Usa Calculator para cualquier operación matemática”).</li>
+      <li>Prueba:<br>
+        <span class="msg"><span>¿Cuánto es 48271 × 3906?</span><button class="copy" type="button">Copiar</button></span><br>
+        <span class="msg"><span>¿Quién creó Python y en qué año?</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>Abre <b>Logs</b>: busca el paso donde el agente llama a Calculator o a Wikipedia.</li>
+    </ol>
+    <div class="expect">La cuenta sale exacta. En Logs, dentro del AI Agent, aparece la herramienta usada con lo que le envió y lo que recibió.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="4a"> Calculator y Wikipedia están conectadas al conector Tool</label>
+      <label><input type="checkbox" data-id="4b"> La multiplicación sale exacta</label>
+      <label><input type="checkbox" data-id="4c"> He visto en Logs que el agente usó una herramienta</label>
+    </div>
+  </section>
+
+  <!-- CP5 -->
+  <section class="panel cp" data-cp="5" style="--c:var(--tool);--cs:var(--tool-soft)">
+    <header><div class="num">5</div><div><h2>El tiempo en Madrid</h2><div class="time">15 minutos</div></div></header>
+    <p class="why"><b>Por qué:</b> una herramienta también puede ser una página web. Aquí el agente consulta una web del tiempo cada vez que le preguntas, así que el dato es de ahora mismo y no de cuando se entrenó el modelo.</p>
+    <ol class="steps">
+      <li>Pulsa el <b>+</b> del conector <b>Tool</b> y añade <b>HTTP Request Tool</b>.</li>
+      <li>Cambia el nombre del nodo (arriba del todo) a <code>Tiempo en Madrid</code>.</li>
+      <li>En <b>Description</b> elige <b>Set manually</b> y escribe:<br><span class="msg"><span>Devuelve el tiempo que hace ahora mismo en Madrid. Úsala cuando pregunten por el tiempo en Madrid.</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>En <b>URL</b> pega (sin cambiar nada más):<br><span class="msg"><span>https://wttr.in/Madrid?format=3&amp;lang=es</span><button class="copy" type="button">Copiar</button></span></li>
+      <li>Añade una línea a tu System Message sobre esta herramienta.</li>
+      <li>Prueba:<br><span class="msg"><span>¿Qué tiempo hace en Madrid? ¿Me llevo chaqueta?</span><button class="copy" type="button">Copiar</button></span></li>
+    </ol>
+    <div class="expect">Una respuesta con la temperatura real de ahora y una recomendación. En Logs, la herramienta devuelve una línea parecida a <code>Madrid: ⛅️ +18°C</code>.</div>
+    <details><summary>⭐ Extra si terminas antes</summary><div class="in">
+      <p>Cambia la ciudad por la tuya. Tienes que cambiarla en tres sitios: la URL, el nombre del nodo y la descripción. Pregúntate por qué hacen falta los tres.</p>
+    </div></details>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="5a"> El nodo se llama “Tiempo en Madrid” y tiene descripción</label>
+      <label><input type="checkbox" data-id="5b"> Me da la temperatura de ahora y una recomendación</label>
+    </div>
+  </section>
+
+  <!-- Entrega -->
+  <section class="panel cp" data-cp="6" style="--c:var(--ok);--cs:var(--ok-soft)">
+    <header><div class="num">✓</div><div><h2>Entrega</h2><div class="time">10 minutos</div></div></header>
+    <p class="why"><b>Importante:</b> tu cuenta de prueba se borrará cuando caduque. El archivo JSON es tu copia de seguridad.</p>
+    <ol class="steps">
+      <li><b>Captura 1 · Lienzo:</b> el flujo completo con todos los nodos conectados.</li>
+      <li><b>Captura 2 · Personalidad:</b> la respuesta de antes y la de después del System Message.</li>
+      <li><b>Captura 3 · Memoria:</b> el chat donde recuerda tu nombre.</li>
+      <li><b>Captura 4 · Herramientas:</b> el panel Logs donde se ve una herramienta usada.</li>
+      <li><b>Archivo:</b> menú <kbd>⋯</kbd> → <b>Download</b>. Entrega el <code>.json</code> junto con las capturas.</li>
+    </ol>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="6a"> Tengo las 4 capturas</label>
+      <label><input type="checkbox" data-id="6b"> He descargado el JSON de mi flujo</label>
+    </div>
+  </section>
+
+  <!-- Extra -->
+  <section class="panel cp" data-cp="7" style="--c:var(--mem);--cs:var(--mem-soft)">
+    <header><div class="num">⭐</div><div><h2>Práctica opcional · Modo examen</h2><div class="time">Solo si has terminado la entrega · no cuenta en la barra de progreso</div></div></header>
+    <p class="why"><b>Por qué:</b> hasta ahora DevTutor responde pregunta a pregunta. Aquí le vas a enseñar a seguir un <b>proceso de varios pasos</b> (preguntar, esperar, corregir, contar aciertos) sin añadir nodos nuevos: solo con instrucciones, memoria y una herramienta que ya tienes.</p>
+    <h3 style="font-size:1.1rem;margin-top:16px">Parte A · El examen</h3>
+    <ol class="steps">
+      <li>Abre el <b>System Message</b> del AI Agent y añade al final un bloque nuevo que explique el modo examen. Tiene que decir:
+        <br>· qué palabra lo activa (<code>modo examen</code>) y cuál lo termina (<code>salir</code>),
+        <br>· que haga <b>3 preguntas</b> tipo test sobre Python básico, <b>de una en una</b>, con opciones a, b y c,
+        <br>· que espere la respuesta y diga si es correcta y por qué en una sola línea,
+        <br>· que al final calcule la nota sobre 10 <b>usando Calculator</b>.</li>
+      <li>Prueba:<br><span class="msg"><span>modo examen</span><button class="copy" type="button">Copiar</button></span><br>Contesta las 3 preguntas (falla una a propósito) y mira la nota final.</li>
+      <li>Abre <b>Logs</b> y busca la llamada a Calculator con la operación de la nota.</li>
+      <li>Escribe <code>salir</code> y hazle una pregunta normal: debe volver a ser tutor.</li>
+    </ol>
+    <details><summary>💡 Pista: cómo empezar el bloque</summary><div class="in">
+      <pre class="tpl">MODO EXAMEN
+Si el usuario escribe "modo examen":
+1. Haz una pregunta tipo test sobre ______ con opciones a, b y c.
+2. Espera su respuesta. No hagas la siguiente pregunta hasta ______.
+3. Dile si ha acertado y ______.
+4. Repite hasta ______ preguntas.
+5. Al final, ______ usando Calculator.
+Si escribe "salir", ______.</pre>
+    </div></details>
+    <details><summary>🤔 Para pensar</summary><div class="in">
+      <p>Desconecta un momento Simple Memory y repite el examen. ¿Qué pasa con la cuenta de aciertos? ¿Por qué? Vuelve a conectarla después.</p>
+    </div></details>
+    <div class="expect">Una pregunta cada vez, corrección en una línea, y al final una nota como “2 de 3 → 6,67 sobre 10”. En Logs aparece Calculator con la operación.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="7a" data-opt> Hace las preguntas de una en una y espera mi respuesta</label>
+      <label><input type="checkbox" data-id="7b" data-opt> Calcula la nota con Calculator (lo he visto en Logs)</label>
+      <label><input type="checkbox" data-id="7c" data-opt> Con “salir” vuelve a ser tutor normal</label>
+    </div>
+
+    <h3 style="font-size:1.1rem;margin-top:22px">Parte B · Que lo pruebe un compañero</h3>
+    <ol class="steps">
+      <li>Doble clic en <b>When chat message received</b> y activa <b>Make Chat Publicly Available</b>.</li>
+      <li>Activa el flujo con el interruptor <b>Active</b> o el botón <b>Publish</b> de arriba (depende de la versión).</li>
+      <li>Vuelve a abrir el nodo del chat, copia la <b>Chat URL</b> y pásasela a un compañero.</li>
+      <li>Tu compañero hace el modo examen desde su navegador. Tú miras sus mensajes en la pestaña <b>Executions</b>.</li>
+      <li><b>Al terminar, desactiva el flujo.</b> Cada mensaje de tu compañero gasta tu cuota de Gemini.</li>
+    </ol>
+    <div class="expect">Una página de chat independiente de n8n donde tu compañero habla con tu DevTutor, y sus conversaciones apareciendo en Executions.</div>
+    <div class="checks"><h3>Comprobación</h3>
+      <label><input type="checkbox" data-id="7d" data-opt> Un compañero ha usado mi chat desde su navegador</label>
+      <label><input type="checkbox" data-id="7e" data-opt> He visto su conversación en Executions y he desactivado el flujo</label>
+    </div>
+    <p style="margin:12px 0 0;max-width:70ch"><b>Entrega extra:</b> una captura del examen con la nota final y, si hiciste la parte B, una de Executions con la conversación de tu compañero.</p>
+  </section>
+
+  <!-- Ayuda -->
+  <section class="panel">
+    <h2 style="font-size:1.45rem">Si algo falla</h2>
+    <dl class="faq">
+      <dt>El nodo Gemini tiene un triángulo rojo</dt>
+      <dd>Falta la credencial. Doble clic en el nodo y elige o crea tu credencial con la API key.</dd>
+      <dt>Error 429, “quota” o “RESOURCE_EXHAUSTED”</dt>
+      <dd>Has gastado la cuota gratuita del minuto. Espera un minuto y vuelve a probar. Cada mensaje con herramientas gasta 2 o 3 peticiones, así que no mandes mensajes seguidos.</dd>
+      <dt>“Model not found” o el modelo no aparece</dt>
+      <dd>En el nodo Gemini, abre la lista <b>Model</b> y elige otro Flash (por ejemplo <code>gemini-2.5-flash-lite</code>).</dd>
+      <dt>El agente no usa la herramienta</dt>
+      <dd>Revisa que esté unida al conector Tool y dile en el System Message cuándo usarla, con palabras muy claras (“usa SIEMPRE…”).</dd>
+      <dt>No recuerda mi nombre aunque tengo memoria</dt>
+      <dd>Comprueba que Simple Memory está unida al conector <b>Memory</b> (no al de Tool) y que mandas los dos mensajes en el mismo chat.</dd>
+      <dt>La herramienta del tiempo tarda o da error</dt>
+      <dd>La web del tiempo a veces va lenta. Espera unos segundos y repite. Revisa que la URL está copiada completa.</dd>
+      <dt>Se me ha roto todo</dt>
+      <dd>No pasa nada: avisa al profe. Puedes volver a importar la base y recuperar lo hecho en pocos minutos.</dd>
+    </dl>
+  </section>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='devtutor-progreso-v1';
+  var boxes=[].slice.call(document.querySelectorAll('.checks input'));
+  var state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  boxes.forEach(function(b){ b.checked=!!state[b.dataset.id]; b.addEventListener('change',function(){
+    state[b.dataset.id]=b.checked; try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} render(); }); });
+
+  function cpDone(n){
+    var bs=document.querySelectorAll('.cp[data-cp="'+n+'"] .checks input');
+    if(!bs.length) return false;
+    for(var i=0;i<bs.length;i++){ if(!bs[i].checked) return false; } return true;
+  }
+  function render(){
+    var req=boxes.filter(function(b){return !b.hasAttribute('data-opt')});
+    var done=req.filter(function(b){return b.checked}).length;
+    document.getElementById('barFill').style.width=(req.length? done/req.length*100:0)+'%';
+    var extra=cpDone(7)?' · ⭐ extra hecho':'';
+    document.getElementById('countTxt').textContent=done+' de '+req.length+' comprobaciones'+extra;
+    document.querySelectorAll('.cp').forEach(function(s){ s.classList.toggle('done',cpDone(s.dataset.cp)); });
+    document.querySelectorAll('#map [data-cp]').forEach(function(el){ el.classList.toggle('on',cpDone(el.dataset.cp)); });
+  }
+  document.getElementById('reset').addEventListener('click',function(){
+    if(!confirm('¿Borrar todo tu progreso?')) return;
+    state={}; boxes.forEach(function(b){b.checked=false});
+    try{localStorage.removeItem(KEY);}catch(e){} render();
+  });
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var txt=btn.previousElementSibling.textContent;
+      function ok(){ btn.textContent='Copiado'; setTimeout(function(){btn.textContent='Copiar'},1400); }
+      function fallback(){
+        var r=document.createRange(); r.selectNodeContents(btn.previousElementSibling);
+        var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try{ document.execCommand('copy'); ok(); }catch(e){ btn.textContent='Selecciona y copia'; }
+      }
+      try{ navigator.clipboard.writeText(txt).then(ok,fallback); }catch(e){ fallback(); }
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

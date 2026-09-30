@@ -1,0 +1,108 @@
+{
+  "name": "DevTutor · BASE (alumno)",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d5b29df6-b07a-4d45-b1ff-88b28e558a47",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "189acdb2-9e86-4362-b1ad-18d56f8df53e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente útil."
+        }
+      },
+      "id": "bb2dd029-df07-4023-9281-5edfb5aa8321",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "id": "f9897661-712c-4351-b0d8-6f747f782ff8",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🧩 Reto: construye DevTutor\nTu agente ya tiene **chat**, **cerebro** (AI Agent) y **modelo** (Gemini).\nSigue la guía de clase checkpoint a checkpoint.\n\n✅ **CP1** Pon tu credencial en Gemini y saluda\n✅ **CP2** Cambia el *System Message* del AI Agent\n✅ **CP3** Añade memoria\n✅ **CP4** Añade Calculator y Wikipedia\n✅ **CP5** Añade el tiempo de Madrid\n\n💾 Al terminar: menú ⋯ → **Download**",
+        "height": 400,
+        "width": 380,
+        "color": 4
+      },
+      "id": "5b031b11-6f2b-4c7d-9cc7-0e39f5acf7c3",
+      "name": "Reto",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔌 Zona de ampliación\nAquí irán los nodos que conectes debajo del **AI Agent**:\n\n**Memory** → CP3 · Simple Memory\n**Tool** → CP4 · Calculator + Wikipedia\n**Tool** → CP5 · HTTP Request Tool",
+        "height": 260,
+        "width": 660,
+        "color": 7
+      },
+      "id": "8523b427-2213-4763-907d-c793b4fd9cc5",
+      "name": "Zona ampliación",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
