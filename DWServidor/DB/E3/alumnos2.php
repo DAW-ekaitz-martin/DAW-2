@@ -1,8 +1,11 @@
 <?php
-    require 'db.php';
+    require '../db.php';
     
     //Buscar
-    $stmt = $cn ->prepare("SELECT * FROM alumnos");
+    $q = trim($_GET["nombre"]);
+    $like = "%{$q}%";
+    $stmt = $cn ->prepare("SELECT * FROM alumnos WHERE nombre LIKE ?");
+    $stmt->bind_param('s',$like);
     $stmt->execute();
     $res = $stmt->get_result();
 ?>
