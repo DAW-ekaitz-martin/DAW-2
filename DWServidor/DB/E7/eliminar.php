@@ -8,7 +8,7 @@
 <body>
     <form action="confirmar.php" method="post">
 
-        <label for="id">Introduce el id del alumno que quieres borrar: </label><br>
+        <label for="id">Introduce el ID del alumno que quieres borrar: </label><br>
         <input type="number" name="id" id="id"><br><br>
         <button type="submit">Enviar</button>
     </form>
