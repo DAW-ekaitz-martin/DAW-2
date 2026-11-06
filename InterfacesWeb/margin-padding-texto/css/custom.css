@@ -1,0 +1,54 @@
+* {
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+}
+body {
+    background-color:rgb(206, 230, 250);
+    font-family: Arial, Helvetica, sans-serif;
+}
+.container {
+    padding: 120px 120px 120px 120px;
+}
+h1 {
+    margin-bottom: 32px;
+}
+mark {
+    background-color:cadetblue;
+    color:white;
+}
+h2 {
+    margin-bottom: 24px;
+}
+.cont { 
+  margin-bottom: 32px; 
+}
+.cont p {
+    margin-bottom: 16px;
+}
+ol > li > ol > li {
+    margin-left: 20px;
+    margin-bottom: 4px;
+}
+ol > li > ol {
+    margin-bottom: 4px;
+}
+.lista {
+    margin-bottom: 48px;
+}
+
+dl {
+    margin-bottom: 16px;
+}
+dl > dd {
+
+    margin-left: 20px;
+    margin-bottom: 24px;
+}
+hr {
+    margin-bottom: 32px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}

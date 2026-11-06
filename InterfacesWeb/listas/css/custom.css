@@ -1,0 +1,9 @@
+.frutas {
+    list-style-type: square;
+}
+.colores {
+    list-style-type: lower-alpha;
+}
+.meses > li {
+    list-style-image: url("../img/chevron-derecho.png");
+}

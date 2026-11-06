@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+p {
+    color: #333;
+}
+.destacado {
+    background-color: yellow;
+}
+#titulo {
+    text-align: center;
+    color:blue;
+}
+#ofertas {
+    border: 2px solid black;
+}
+
+h1, h2 {
+    color: teal;
+}
+p.destacado {
+    font-weight: 900;
+}
+.destacado.nuevo {
+    color:red;
+}
+li.nuevo {
+    font-style: italic;
+}
+div>p {
+    font-size: 18px;
+}
+#ofertas > p {
+    color:orange
+}
+h1+p {
+    font-style: italic;
+}
+h1~p {
+    padding-left: 20px;;
+}
+.contacto p {
+    color:pink;
+}
+/*.contacto > p {
+    color:pink;
+}*/

@@ -1,0 +1,84 @@
+* {
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+}
+body {
+    padding: 150px;
+}
+.contenedor {
+    margin-bottom: 32px;
+    width: 350px;
+    padding: 66px 132px 66px 132px;
+}
+p {
+    text-align: center;
+    font-weight: bold;
+}
+.solid {
+    color:blue;
+    border: solid 2px blue;
+}
+.dashed {
+    color:orange;
+    border: dashed 2px orange;
+}
+.dotted {
+    color:purple;
+    border: dotted 2px purple;
+}
+.double {
+    color:green;
+    border: double 2px green;
+}
+.groove {
+    color:yellow;
+    border: groove 2px yellow;
+}
+.solid2 {
+    color:red;
+    border-top: solid 15px red;
+    border-bottom: solid 15px red;
+}
+.radius {
+    color:cyan;
+    border: solid 2px cyan;
+    border-radius: 25px;
+}
+.container {
+    display: flex;
+    gap: 15px;
+}
+
+.contenedor2 {
+    margin-top:50px;
+}
+.pestana {
+    background-color: cadetblue;
+    width: 268px;
+    padding: 20px 70px 20px 71px;
+    border-radius: 32px;
+}
+.texto {
+    border-left: 3px solid blue;
+}
+.circulo {
+    background-color: darkkhaki;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+}
+.botoncito {
+    width: 269px;
+    background-color: cornflowerblue;
+    padding: 33px 56px 32px 56px;
+    border-radius: 50px;
+}
+.hoja {
+    height: 105px;
+    width: 112px;
+    border-top-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    background-color: darkgreen;
+}
+
