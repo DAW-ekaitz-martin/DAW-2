@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Carrera popular · 10 km</h1>
+    <label for="categoria">Categoría</label>
+    <select id="categoria">
+        <option value="todas">Todas</option>
+        <option value="sub23">Sub-23</option>
+        <option value="senior">Sénior</option>
+        <option value="veterano">Veterano</option>
+    </select>
+    <label for="buscar">Buscar por nombre</label>
+    <input id="buscar" type="search">
+
+    <label><input id="retirados" type="checkbox"> Mostrar retirados</label>
+    <p id="resumen" role="status"></p>
+    <p id="vacio" hidden>Ningún resultado coincide con los filtros.</p>
+    <table>
+        <thead>
+            <tr><th>Pos.</th><th>Dorsal</th><th>Nombre</th><th>Categoría</th>
+                <th>Tiempo</th><th>Ritmo</th><th>Ficha</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+
+        </tbody>
+    </table>
+    <p id="ficha"></p>
+</body>
+<script src="app.js" defer></script>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EX3 · Citas del taller</title>
+  <script src="app.js" defer></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: .6rem; }
+    input:not([type="checkbox"]), select { display: block; width: 100%; padding: .3rem; box-sizing: border-box; }
+    fieldset { margin-top: .8rem; }
+    #previa { font-weight: 700; }
+    #citas li { display: flex; gap: .5rem; align-items: center; padding: .35rem 0; border-bottom: 1px solid #ddd; }
+    #citas li span { flex: 1; }
+  </style>
+</head>
+<body>
+  <h1>Pide cita en el taller</h1>
+  <form id="formCita" novalidate>
+    <label for="matricula">Matrícula (1234BCD)</label>
+    <!-- B.1: 4 dígitos + 3 consonantes mayúsculas, sin vocales, Ñ ni Q -->
+    <input id="matricula" name="matricula" required
+           pattern="[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}"
+           title="Cuatro dígitos y tres consonantes mayúsculas (sin vocales, Ñ ni Q). Ej.: 1234BCD">
+    <label for="correo">Correo electrónico</label>
+    <input id="correo" name="correo" type="email" required>
+    <label for="correo2">Repite el correo</label>
+    <input id="correo2" name="correo2" type="email" required>
+    <label for="km">Kilómetros del vehículo</label>
+    <!-- B.2: entero entre 0 y 999 999 -->
+    <input id="km" name="km" type="number" required min="0" max="999999" step="1">
+    <label for="servicio">Servicio</label>
+    <select id="servicio" name="servicio" required>
+      <option value="">Elige un servicio</option>
+      <option value="aceite">Cambio de aceite (60 €)</option>
+      <option value="revision">Revisión completa (90 €)</option>
+      <option value="frenos">Frenos (120 €)</option>
+    </select>
+    <fieldset>
+      <legend>Extras</legend>
+      <label><input type="checkbox" name="extras" value="lavado"> Lavado (15 €)</label>
+      <label><input type="checkbox" name="extras" value="sustitucion"> Coche de sustitución (30 €)</label>
+    </fieldset>
+    <label><input id="domicilio" type="checkbox" name="domicilio"> Recogida a domicilio (12 €)</label>
+    <label for="direccion">Dirección de recogida</label>
+    <input id="direccion" name="direccion" disabled>
+    <p id="previa" role="status">Precio estimado: —</p>
+    <button type="submit">Reservar cita</button>
+    <button type="reset">Vaciar</button>
+  </form>
+  <p id="mensaje" role="status"></p>
+  <p id="resumen"></p>
+  <ul id="citas"></ul>
+</body>
+</html>

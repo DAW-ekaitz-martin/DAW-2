@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablón de incidencias</title>
+  <!-- FALLO 1: sin defer el script se ejecutaba antes de que existiera el body -->
+  <script src="app.js" defer></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: .6rem; }
+    #listado li { padding: .35rem 0; border-bottom: 1px solid #ddd; }
+    #listado li.cerrada strong { text-decoration: line-through; color: #777; }
+    #listado button { margin-left: .3rem; }
+  </style>
+</head>
+<body>
+  <h1>Tablón de incidencias</h1>
+  <form id="formIncidencia" novalidate>
+    <label for="titulo">Título</label>
+    <input id="titulo" name="titulo" required>
+    <label for="prioridad">Prioridad (1 a 5)</label>
+    <!-- FALLO 5: faltaba required (y step para exigir un entero) -->
+    <input id="prioridad" name="prioridad" type="number" min="1" max="5" step="1" required>
+    <button type="submit">Añadir</button>
+    <!-- FALLO 3: un <button> dentro de un form es type="submit" por defecto -->
+    <button id="limpiar" type="button">Limpiar</button>
+  </form>
+  <label for="filtro">Ver</label>
+  <select id="filtro">
+    <option value="todas">Todas</option>
+    <option value="abierta">Abiertas</option>
+    <option value="cerrada">Cerradas</option>
+  </select>
+  <!-- PARTE C.3: campo de búsqueda -->
+  <label for="buscar">Buscar por título</label>
+  <input id="buscar" type="search">
+  <p id="contador" role="status"></p>
+  <!-- PARTE C.4: mensaje sin resultados -->
+  <p id="vacio" hidden>No hay incidencias que mostrar.</p>
+  <ul id="listado"></ul>
+</body>
+</html>

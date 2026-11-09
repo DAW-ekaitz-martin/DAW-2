@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EX2 · Biblioteca del centro</title>
+  <script src="app.js" defer></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: .75rem; font-weight: 600; }
+    #catalogo { padding: 0; list-style: none; }
+    #catalogo li { display: flex; gap: .5rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid #ddd; }
+    #catalogo li span { flex: 1; }
+    #mensaje { min-height: 1.5em; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>Biblioteca del centro</h1>
+  <label for="tipo">Tipo</label>
+  <select id="tipo">
+    <option value="todos">Todos</option>
+    <option value="libro">Libros</option>
+    <option value="revista">Revistas</option>
+    <option value="videojuego">Videojuegos</option>
+  </select>
+  <label for="diasUso">Días que ha durado el préstamo</label>
+  <input id="diasUso" type="number" min="1" value="1">
+  <p id="estadisticas"></p>
+  <p id="mensaje" role="status"></p>
+  <p>Multas cobradas: <strong id="caja">0.00 €</strong></p>
+  <ul id="catalogo"></ul>
+</body>
+</html>

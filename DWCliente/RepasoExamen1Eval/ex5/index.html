@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EX5 · Taquilla del festival</title>
+  <script src="app.js" defer></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: .6rem; }
+    fieldset label { display: inline-block; margin-right: 1rem; }
+    #panel { font-weight: 700; }
+    #entradas { padding: 0; list-style: none; }
+    #entradas li { display: flex; gap: .4rem; align-items: center; padding: .4rem 0; border-bottom: 1px solid #ddd; }
+    #entradas li span { flex: 1; }
+    #entradas li.validada span { color: #2a7a2a; }
+    #entradas li.editando { background: #fff6d6; }
+  </style>
+</head>
+<body>
+  <h1>Taquilla del festival</h1>
+  <form id="formEntrada" novalidate>
+    <label for="comprador">Nombre</label>
+    <input id="comprador" name="comprador" required>
+    <label for="correo">Correo</label>
+    <input id="correo" name="correo" type="email" required>
+    <label for="tipo">Tipo de entrada</label>
+    <select id="tipo" name="tipo" required>
+      <option value="">Elige un tipo</option>
+      <option value="general">General</option>
+      <option value="vip">VIP</option>
+      <option value="grupo">Grupo</option>
+    </select>
+    <fieldset>
+      <legend>Día</legend>
+      <label><input type="radio" name="dia" value="sabado" required> Sábado</label>
+      <label><input type="radio" name="dia" value="domingo"> Domingo</label>
+      <label><input type="radio" name="dia" value="ambos"> Ambos</label>
+    </fieldset>
+    <label for="personas">Personas del grupo</label>
+    <!-- B.2: step="1" para exigir un número entero -->
+    <input id="personas" name="personas" type="number" min="4" max="12" step="1" disabled>
+    <label><input id="backstage" name="backstage" type="checkbox" disabled> Pase de backstage</label>
+    <label for="socio">Código de socio (opcional)</label>
+    <input id="socio" name="socio" pattern="FEST-[A-Z]{2}[0-9]{2}" title="Formato FEST-AB12">
+    <button id="enviar" type="submit">Crear entrada</button>
+    <button id="cancelar" type="button" hidden>Cancelar edición</button>
+  </form>
+  <p id="mensaje" role="status"></p>
+  <label for="filtroDia">Día</label>
+  <select id="filtroDia">
+    <option value="todos">Todos</option>
+    <option value="sabado">Sábado</option>
+    <option value="domingo">Domingo</option>
+  </select>
+  <label for="buscar">Buscar comprador</label>
+  <input id="buscar" type="search">
+  <label><input id="pendientes" type="checkbox"> Solo sin validar</label>
+  <p id="panel"></p>
+  <p id="vacio" hidden>No hay entradas que mostrar.</p>
+  <ul id="entradas"></ul>
+</body>
+</html>
